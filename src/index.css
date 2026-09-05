@@ -53,17 +53,4 @@
     mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
     -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   }
-
-  @keyframes reelConveyor {
-    0% {
-      transform: translateX(0px);
-    }
-    100% {
-      transform: translateX(-2740px);
-    }
-  }
-
-  .animate-reel-drift {
-    animation: reelConveyor 36s linear infinite;
-  }
 }

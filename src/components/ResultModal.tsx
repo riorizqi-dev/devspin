@@ -8,6 +8,9 @@ import {
   SpecCodeIcon,
   CheckmarkIcon,
   ClockMeterIcon,
+  BlueprintArchIcon,
+  ListChecklistIcon,
+  RoadmapMilestoneIcon,
 } from './Icons';
 import { type ProjectIdea, CATEGORY_LABELS, DIFFICULTY_CONFIG } from '../data/projectsData';
 import { isProjectBookmarked, toggleBookmark } from '../utils/storage';
@@ -71,7 +74,35 @@ export const ResultModal: React.FC<ResultModalProps> = ({
 
   const handleCopySummary = async () => {
     sound.playClick();
-    const text = `Ide Project DevSpin: ${project.title}\n\nKategori: ${cat.label} (${project.difficulty})\nEstimasi: ${project.duration}\nStack: ${project.stack.join(', ')}\n\nDeskripsi:\n${project.description}\n\nFitur Unggulan:\n${project.highlights}\n\nTemukan ide lainnya di devspin.app`;
+    const featuresList = (project.features && project.features.length > 0)
+      ? project.features.map(f => `- ${f}`).join('\n')
+      : `- ${project.highlights}`;
+
+    const stepsList = (project.steps && project.steps.length > 0)
+      ? project.steps.map((s, i) => `${i + 1}. ${s}`).join('\n')
+      : '';
+
+    const text = `Ide Project DevSpin: ${project.title}
+
+Kategori: ${cat.label} (${diff.label})
+Estimasi Pengerjaan: ${project.duration}
+Domain: ${project.domain}
+Tech Stack: ${project.stack.join(', ')}
+
+Deskripsi & Latar Belakang:
+${project.overview || project.description}
+
+Arsitektur Sistem:
+${project.architecture || project.description}
+
+Fitur Utama yang Harus Dibangun:
+${featuresList}
+${stepsList ? `\nRoadmap Implementasi:\n${stepsList}\n` : ''}
+Fitur Unggulan Kunci:
+${project.highlights}
+
+Temukan ratusan ide project lainnya di: https://devspin.app`;
+
     try {
       await navigator.clipboard.writeText(text);
       setCopySuccess(true);
@@ -136,15 +167,79 @@ export const ResultModal: React.FC<ResultModalProps> = ({
 
           {/* Title */}
           <div>
-            <h2 id="result-title" className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+            <h2 id="result-title" className="text-2xl sm:text-3xl font-extrabold text-white leading-tight font-mono">
               {project.title}
             </h2>
           </div>
 
-          {/* Description */}
-          <div className="p-4 rounded-2xl bg-devDark-850 border border-devDark-750 text-sm text-slate-200 leading-relaxed">
-            {project.description}
+          {/* Detailed Overview & Background */}
+          <div>
+            <h3 className="text-xs font-mono font-bold text-devCyan uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <span>&gt;</span> Deskripsi & Latar Belakang Proyek
+            </h3>
+            <div className="p-4 rounded-2xl bg-devDark-850 border border-devDark-750 text-sm text-slate-200 leading-relaxed font-sans">
+              {project.overview || project.description}
+            </div>
           </div>
+
+          {/* Architecture & Data Flow */}
+          {project.architecture && (
+            <div>
+              <h3 className="text-xs font-mono font-bold text-devAmber uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <BlueprintArchIcon size={14} className="text-devAmber" />
+                Arsitektur Sistem & Alur Kerja
+              </h3>
+              <div className="p-4 rounded-2xl bg-devDark-850 border border-devDark-700 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+                {project.architecture}
+              </div>
+            </div>
+          )}
+
+          {/* Key Deliverable Features */}
+          {project.features && project.features.length > 0 && (
+            <div>
+              <h3 className="text-xs font-mono font-bold text-devCyan uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <ListChecklistIcon size={14} className="text-devCyan" />
+                Fitur Utama yang Harus Dibangun
+              </h3>
+              <div className="grid gap-2">
+                {project.features.map((feat, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 rounded-xl bg-devDark-850 border border-devDark-750 flex items-start gap-2.5 text-xs text-slate-200"
+                  >
+                    <div className="w-5 h-5 rounded bg-devDark-800 border border-devCyan/30 flex items-center justify-center text-devCyan flex-shrink-0 mt-0.5">
+                      <CheckmarkIcon size={11} />
+                    </div>
+                    <span className="leading-relaxed">{feat}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Implementation Roadmap */}
+          {project.steps && project.steps.length > 0 && (
+            <div>
+              <h3 className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <RoadmapMilestoneIcon size={14} className="text-slate-400" />
+                Roadmap Implementasi Bertahap
+              </h3>
+              <div className="space-y-2">
+                {project.steps.map((stepText, sIdx) => (
+                  <div
+                    key={sIdx}
+                    className="p-3 rounded-xl bg-devDark-850 border border-devDark-750 flex items-start gap-3 text-xs text-slate-300"
+                  >
+                    <span className="px-2 py-0.5 rounded font-mono font-bold bg-devDark-800 text-devCyan border border-devDark-700 flex-shrink-0">
+                      0{sIdx + 1}
+                    </span>
+                    <span className="leading-relaxed">{stepText}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Key Differentiator Highlight */}
           <div className="p-4 rounded-2xl bg-devDark-850 border border-devDark-700 flex items-start gap-3">

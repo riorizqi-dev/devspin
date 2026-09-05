@@ -25,8 +25,7 @@ const CARD_WIDTH = 260;
 const CARD_GAP = 14;
 const CARD_STEP = CARD_WIDTH + CARD_GAP;
 const TOTAL_CARDS_IN_STRIP = 80;
-const WINNER_INDEX = 58; // Center target card index
-const SPIN_DURATION_SEC = 4.4; // 4.4s for thrilling roulette suspense
+const WINNER_INDEX = 50; // Center target card index
 
 export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
   mode,
@@ -43,7 +42,8 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const animFrameRef = useRef<number | null>(null);
-  const lastTickCardRef = useRef<number>(-1);
+  const idleFrameRef = useRef<number | null>(null);
+  const currentXRef = useRef<number>(0);
 
   // Compute current pool
   const { available, totalMatching, seenCount } = filterProjects(filter, true);
@@ -72,17 +72,51 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
     setWinnerCard(null);
 
     // Reset track position
+    currentXRef.current = 0;
     if (trackRef.current) {
-      trackRef.current.style.transition = 'none';
-      trackRef.current.style.transform = 'translateX(0px)';
+      trackRef.current.style.transform = 'translate3d(0px, 0, 0)';
     }
   }, [available.length, mode, filter, buildReelSequence]);
+
+  // Ambient idle drift loop using RAF
+  useEffect(() => {
+    if (reelState !== 'idle') return;
+
+    let lastTime = performance.now();
+    const idleDrift = (now: number) => {
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+      currentXRef.current -= 45 * dt;
+
+      // Wrap if drifted past 12 cards
+      const wrapLimit = -(12 * CARD_STEP);
+      if (currentXRef.current <= wrapLimit) {
+        currentXRef.current = 0;
+      }
+
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translate3d(${currentXRef.current}px, 0, 0)`;
+      }
+
+      idleFrameRef.current = requestAnimationFrame(idleDrift);
+    };
+
+    idleFrameRef.current = requestAnimationFrame(idleDrift);
+    return () => {
+      if (idleFrameRef.current) {
+        cancelAnimationFrame(idleFrameRef.current);
+      }
+    };
+  }, [reelState]);
 
   // Clean up RAF on unmount
   useEffect(() => {
     return () => {
       if (animFrameRef.current) {
         cancelAnimationFrame(animFrameRef.current);
+      }
+      if (idleFrameRef.current) {
+        cancelAnimationFrame(idleFrameRef.current);
       }
     };
   }, []);
@@ -99,10 +133,20 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
     const container = containerRef.current;
     if (!track || !container) return;
 
-    // Pick winner from available pool
+    // 1. Cancel any active animation loops
+    if (idleFrameRef.current) {
+      cancelAnimationFrame(idleFrameRef.current);
+      idleFrameRef.current = null;
+    }
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
+
+    // 2. Pick winner from available pool
     const selectedWinner = available[Math.floor(Math.random() * available.length)];
 
-    // Populate reel with sequence having selectedWinner at WINNER_INDEX
+    // 3. Populate reel sequence with selectedWinner placed at WINNER_INDEX
     const newCards = buildReelSequence(available, selectedWinner);
     setReelCards(newCards);
     setWinnerCard(selectedWinner);
@@ -110,77 +154,68 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
 
     sound.playWhoosh();
 
+    const startX = currentXRef.current;
     const containerWidth = container.clientWidth;
     const centerPoint = containerWidth / 2;
-    // Calculate exact pixel target so WINNER_INDEX center aligns with centerPoint needle
     const winnerCenter = WINNER_INDEX * CARD_STEP + CARD_WIDTH / 2;
     const targetOffset = centerPoint - winnerCenter;
+    const totalDistance = targetOffset - startX;
 
-    // 1. Instantly reset track to 0 without transition
-    track.style.transition = 'none';
-    track.style.transform = 'translateX(0px)';
-
-    // 2. Force browser DOM reflow so transform(0) is applied before animating
-    void track.offsetWidth;
-
-    // 3. Launch high-speed CSS deceleration transition
-    track.style.transition = `transform ${SPIN_DURATION_SEC}s cubic-bezier(0.06, 0.85, 0.18, 1)`;
-    track.style.transform = `translateX(${targetOffset}px)`;
-
-    // 4. Track card crossings to trigger realistic mechanical clicks
+    // 4. Launch immediate RAF physics deceleration
     const startTime = performance.now();
-    const durationMs = SPIN_DURATION_SEC * 1000;
-    lastTickCardRef.current = -1;
+    const durationMs = 4200;
+    const tickSet = new Set<number>();
 
-    const trackAudioTicks = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
+    const spinStep = (now: number) => {
+      const elapsed = now - startTime;
       const progress = Math.min(elapsed / durationMs, 1);
 
-      // Approximation of easeOutQuart curve to match cubic-bezier
-      const easedProgress = 1 - Math.pow(1 - progress, 3.8);
-      const currentTranslate = targetOffset * easedProgress;
+      // Smooth CS:GO roulette ease-out: 1 - (1 - progress)^3
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const currentPos = startX + totalDistance * eased;
+      currentXRef.current = currentPos;
 
-      // Card currently crossing center
-      const currentCard = Math.floor(
-        Math.abs(currentTranslate - centerPoint) / CARD_STEP
-      );
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translate3d(${currentPos}px, 0, 0)`;
+      }
 
-      if (currentCard !== lastTickCardRef.current && currentCard >= 0) {
-        lastTickCardRef.current = currentCard;
-        // Pitch factor drops from high to low as reel slows down
-        const pitchFactor = 1.35 - progress * 0.7;
-        sound.playTick(pitchFactor);
+      // Audio tick on each card passing center needle
+      const centerCard = Math.floor(Math.abs(currentPos - centerPoint) / CARD_STEP);
+      if (!tickSet.has(centerCard) && centerCard >= 0) {
+        tickSet.add(centerCard);
+        const pitch = 1.35 - progress * 0.65;
+        sound.playTick(pitch);
       }
 
       if (progress < 1) {
-        animFrameRef.current = requestAnimationFrame(trackAudioTicks);
+        animFrameRef.current = requestAnimationFrame(spinStep);
+      } else {
+        // Perfect stop on winner card
+        currentXRef.current = targetOffset;
+        if (trackRef.current) {
+          trackRef.current.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
+        }
+        setReelState('revealed');
+
+        markIdAsSeen(selectedWinner.id);
+        addSpinHistory(selectedWinner, mode);
+
+        sound.playWin();
+        confetti({
+          particleCount: 80,
+          spread: 75,
+          origin: { y: 0.6 },
+          colors: ['#00e5ff', '#38bdf8', '#f59e0b', '#ffffff']
+        });
+
+        // Show result modal after highlight anticipation
+        setTimeout(() => {
+          onWinnerSelected(selectedWinner);
+        }, 1000);
       }
     };
 
-    animFrameRef.current = requestAnimationFrame(trackAudioTicks);
-
-    // 5. Completion handler
-    setTimeout(() => {
-      setReelState('revealed');
-
-      // Record in anti-repeat storage
-      markIdAsSeen(selectedWinner.id);
-      addSpinHistory(selectedWinner, mode);
-
-      // Win celebration
-      sound.playWin();
-      confetti({
-        particleCount: 80,
-        spread: 75,
-        origin: { y: 0.6 },
-        colors: ['#00e5ff', '#38bdf8', '#f59e0b', '#ffffff']
-      });
-
-      // Show modal after card flash anticipation
-      setTimeout(() => {
-        onWinnerSelected(selectedWinner);
-      }, 1050);
-    }, durationMs);
+    animFrameRef.current = requestAnimationFrame(spinStep);
   }, [available, buildReelSequence, mode, onPoolExhausted, onWinnerSelected, reelState]);
 
   // Keyboard shortcut: Spacebar to trigger spin
@@ -314,10 +349,10 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
           }`}
           title={reelState === 'idle' ? 'Klik untuk putar gacha reel' : ''}
         >
-          {/* Reel Track: Has .animate-reel-drift when idle, CSS transform when spinning */}
+          {/* Reel Track: Position controlled by smooth RAF physics engine */}
           <div
             ref={trackRef}
-            className={`flex items-center ${reelState === 'idle' ? 'animate-reel-drift' : ''}`}
+            className="flex items-center"
             style={{
               gap: `${CARD_GAP}px`,
               willChange: 'transform',
