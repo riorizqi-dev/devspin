@@ -2,6 +2,12 @@
 
 > "Bingung mau ngoding apa? Spin aja."
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-devspin.vercel.app-00e5ff?style=for-the-badge&logo=vercel&logoColor=black)](https://devspin.vercel.app)
+[![Tech Stack](https://img.shields.io/badge/React_19-TypeScript-blue?style=for-the-badge&logo=react)](https://devspin.vercel.app)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+
+**Live Demo:** [https://devspin.vercel.app](https://devspin.vercel.app)
+
 DevSpin adalah generator ide project programmer berbasis web dengan mekanisme interaktif horizontal roulette reel (gacha / case opening ala CS:GO & LuckyRoyale). Aplikasi ini dirancang untuk membantu developer pemula hingga menengah yang sering terjebak di fase kebingungan menentukan ide project portofolio atau side project.
 
 ---
@@ -10,7 +16,8 @@ DevSpin adalah generator ide project programmer berbasis web dengan mekanisme in
 
 Banyak programmer sering stuck mencari ide project dan berakhir membaca artikel generik "50 Ide Project" yang membosankan. DevSpin mengubah proses tersebut menjadi pengalaman gamified yang seru, cepat, dan terarah:
 
-- **Bukan List Membosankan**: Memilih ide melalui horizontal reel roulette dengan deselerasi fisika nyata selama 4.4 detik.
+- **Bukan List Membosankan**: Memilih ide melalui horizontal reel roulette dengan deselerasi fisika nyata via RAF (requestAnimationFrame) berkecepatan tinggi yang melambat mulus.
+- **Spesifikasi Mendalam (Bukan Cuma 1 Kalimat)**: Setiap ide dilengkapi deskripsi latar belakang komprehensif, arsitektur sistem & alur data, checklist 4 fitur utama, dan 3 tahap roadmap implementasi.
 - **Anti-Repeat Engine**: Ide yang sudah didapat dicatat di LocalStorage dan tidak akan muncul kembali sampai seluruh pool ide habis.
 - **Dua Pilihan Mode**: Mode Terpandu (Guided Match 5 langkah) atau Mode Acak (Instant Random Spin).
 - **Audio Sintetis**: Efek suara detik mekanis ticker dinamis dan win fanfare menggunakan native Web Audio API (tanpa file audio eksternal).
