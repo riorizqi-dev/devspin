@@ -48,8 +48,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-devDark-700/80 bg-devDark-950/95 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-40 w-full max-w-full min-w-0 border-b border-devDark-700/80 bg-devDark-950/95 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <button
           onClick={() => {

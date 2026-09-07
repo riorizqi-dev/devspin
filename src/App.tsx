@@ -82,7 +82,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-devDark-950 text-slate-100 flex flex-col justify-between selection:bg-termGreen selection:text-black">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-devDark-950 text-slate-100 flex flex-col justify-between selection:bg-devCyan selection:text-black">
       {/* Top Terminal Navigation */}
       <Navbar
         onOpenHistory={handleOpenHistory}
@@ -96,7 +96,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Single-Page Terminal Experience */}
-      <main className="flex-1 flex flex-col justify-center">
+      <main className="flex-1 w-full max-w-full min-w-0 flex flex-col justify-start sm:justify-center overflow-x-hidden">
         <LandingHero
           mode={spinMode}
           filter={activeFilter}
@@ -148,17 +148,17 @@ export const App: React.FC = () => {
       />
 
       {/* Hacker Terminal Footer */}
-      <footer className="border-t border-devDark-800 bg-devDark-950 py-7 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-mono">
+      <footer className="w-full max-w-full overflow-x-hidden border-t border-devDark-800 bg-devDark-950 py-7 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-mono text-center sm:text-left">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-termGreen">&gt; devspin</span>
+            <span className="font-bold text-devCyan">&gt; devspin</span>
             <span className="text-slate-600">/</span>
             <span>generator ide project programmer</span>
           </div>
 
-          <div className="flex items-center gap-3 text-[11px]">
-            <span className="flex items-center gap-1.5 text-termGreen">
-              <SpecCodeIcon size={13} className="text-termGreen" />
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-[11px]">
+            <span className="flex items-center gap-1.5 text-devCyan">
+              <SpecCodeIcon size={13} className="text-devCyan" />
               155 ide terkurasi
             </span>
             <span className="text-slate-700">|</span>

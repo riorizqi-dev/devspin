@@ -30,9 +30,9 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
   onPoolExhausted,
 }) => {
   return (
-    <div className="pt-4 sm:pt-6 pb-12 sm:pb-16 px-3.5 sm:px-6 max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto pt-4 sm:pt-6 pb-12 sm:pb-16 px-3.5 sm:px-6 min-w-0">
       {/* Terminal Hero Section */}
-      <section className="text-center max-w-3xl mx-auto pt-1 sm:pt-2 mb-6 sm:mb-8">
+      <section className="w-full max-w-3xl mx-auto text-center pt-1 sm:pt-2 mb-6 sm:mb-8 min-w-0">
         {/* Terminal Prompt Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-devDark-900 border border-devDark-750 text-[11px] sm:text-xs font-mono text-devCyan mb-4 sm:mb-5">
           <span className="text-slate-500">&gt;</span>
@@ -125,7 +125,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
       </section>
 
       {/* REAL CS:GO / GACHA CASE OPENING STRIP REEL */}
-      <section className="my-8">
+      <section className="w-full max-w-6xl mx-auto my-8 min-w-0">
         <h2 className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider mb-3 text-center sm:text-left flex items-center gap-2">
           <span className="text-devCyan">&gt;</span>
           <span>Roulette strip gacha reel</span>
@@ -143,7 +143,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
       </section>
 
       {/* Terminal Feature Cards */}
-      <section className="max-w-6xl mx-auto mt-14 pt-8 border-t border-devDark-800">
+      <section className="w-full max-w-6xl mx-auto mt-14 pt-8 border-t border-devDark-800 min-w-0">
         <h2 className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider mb-6 text-center sm:text-left flex items-center gap-2">
           <span className="text-devCyan">&gt;</span>
           <span>Spesifikasi sistem devspin</span>

@@ -231,14 +231,14 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
   }, [handleStartSpin]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto min-w-0">
       {/* Top Controller Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-devDark-900 border border-devDark-750 mb-4 font-mono">
+      <div className="w-full min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-devDark-900 border border-devDark-750 mb-4 font-mono">
         <div className="flex items-center gap-3">
           <div
             className={`w-9 h-9 rounded-xl flex items-center justify-center border flex-shrink-0 ${
               mode === 'guided'
-                ? 'bg-devDark-800 text-termGreen border-devDark-700'
+                ? 'bg-devDark-800 text-devCyan border-devDark-700'
                 : 'bg-devDark-800 text-slate-300 border-devDark-700'
             }`}
           >
@@ -249,7 +249,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
               <span className="text-xs font-bold text-white uppercase tracking-wider">
                 {mode === 'guided' ? 'MODE_GUIDED' : 'MODE_RANDOM'}
               </span>
-              <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded bg-devDark-800 text-termGreen border border-devDark-700">
+              <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded bg-devDark-800 text-devCyan border border-devDark-700">
                 {available.length} ide aktif
               </span>
             </div>
@@ -266,7 +266,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
           {mode === 'guided' ? (
             <>
               {filter?.category && (
-                <span className="text-[11px] sm:text-xs px-2 sm:px-2.5 py-1 rounded bg-devDark-800 text-termGreen border border-devDark-700">
+                <span className="text-[11px] sm:text-xs px-2 sm:px-2.5 py-1 rounded bg-devDark-800 text-devCyan border border-devDark-700">
                   cat:{filter.category}
                 </span>
               )}
@@ -294,7 +294,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
                   onSwitchToRandom();
                 }}
                 disabled={reelState === 'spinning'}
-                className="min-h-[44px] px-3 py-1.5 rounded-lg bg-devDark-850 hover:bg-devDark-800 text-termGreen border border-devDark-750 text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                className="min-h-[44px] px-3 py-1.5 rounded-lg bg-devDark-850 hover:bg-devDark-800 text-devCyan border border-devDark-750 text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
               >
                 <RandomDiceIcon size={14} />
                 <span>[mode acak]</span>
@@ -308,7 +308,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
                 onOpenQuiz();
               }}
               disabled={reelState === 'spinning'}
-              className="w-full sm:w-auto min-h-[44px] px-3.5 py-1.5 rounded-lg bg-devDark-850 hover:bg-devDark-800 text-termGreen border border-devDark-750 text-xs flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
+              className="w-full sm:w-auto min-h-[44px] px-4 py-2 rounded-lg bg-devDark-800 hover:bg-devDark-750 text-devCyan border border-devDark-700 hover:border-devCyan/50 text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50 font-mono font-semibold"
             >
               <GuidedTunerIcon size={14} />
               <span>[buka kuis guided match]</span>
@@ -318,11 +318,11 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
       </div>
 
       {/* Main Strip Ticker Display (Case Opening Roulette) */}
-      <div className="relative rounded-2xl sm:rounded-3xl bg-devDark-900 border border-devDark-750 p-3 sm:p-6 overflow-hidden">
+      <div className="relative w-full max-w-full min-w-0 rounded-2xl sm:rounded-3xl bg-devDark-900 border border-devDark-750 p-3 sm:p-6 overflow-hidden">
         {/* Terminal Strip Header */}
         <div className="flex items-center justify-between pb-3 border-b border-devDark-800 text-[10px] sm:text-[11px] font-mono text-slate-400 mb-1">
-          <span className="flex items-center gap-2 text-termGreen truncate">
-            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${reelState === 'spinning' ? 'bg-devRose animate-ping' : 'bg-termGreen animate-pulse'}`} />
+          <span className="flex items-center gap-2 text-devCyan truncate">
+            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${reelState === 'spinning' ? 'bg-devRose animate-ping' : 'bg-devCyan animate-pulse'}`} />
             <span className="truncate">
               {reelState === 'idle' && 'GACHA_REEL_ACTIVE (CONVEYOR_DRIFT)'}
               {reelState === 'spinning' && 'DECELERATING_SPIN_ROULETTE...'}
@@ -335,7 +335,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
         </div>
 
         {/* Ticker Viewport Container with localized Needle Marker */}
-        <div className="relative w-full overflow-hidden py-3 select-none">
+        <div className="relative w-full max-w-full min-w-0 overflow-hidden py-3 select-none">
           {/* Center Needle Marker (Scoped precisely to card height, never protruding) */}
           <div className="absolute top-1 bottom-1 left-1/2 -translate-x-1/2 w-0.5 bg-devRose z-30 pointer-events-none">
             <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[8px] border-t-devRose" />
@@ -347,7 +347,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
             onClick={() => {
               if (reelState === 'idle') handleStartSpin();
             }}
-            className={`w-full overflow-hidden ticker-mask flex items-center min-h-[215px] ${
+            className={`w-full max-w-full min-w-0 overflow-hidden ticker-mask flex items-center min-h-[215px] ${
               reelState === 'idle' ? 'cursor-pointer' : ''
             }`}
             title={reelState === 'idle' ? 'Klik untuk putar gacha reel' : ''}
