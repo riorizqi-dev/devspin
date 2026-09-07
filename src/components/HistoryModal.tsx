@@ -111,13 +111,13 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="history-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md"
     >
-      <div className="relative w-full max-w-3xl bg-devDark-900 border border-devDark-700 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-3xl bg-devDark-900 border border-devDark-700 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-devDark-750 flex items-center justify-between bg-devDark-950/70">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-devDark-750 flex items-center justify-between bg-devDark-950/70">
           <div className="flex items-center gap-2">
-            <h2 id="history-modal-title" className="text-base font-bold text-white">
+            <h2 id="history-modal-title" className="text-sm sm:text-base font-bold text-white">
               Koleksi dan riwayat idemu
             </h2>
           </div>
@@ -134,35 +134,35 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
         </div>
 
         {/* Tab Selector & Search */}
-        <div className="p-4 sm:px-6 border-b border-devDark-750 bg-devDark-850/60 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-          <div className="flex rounded-xl bg-devDark-900 p-1 border border-devDark-700">
+        <div className="p-3.5 sm:p-4 sm:px-6 border-b border-devDark-750 bg-devDark-850/60 flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center justify-between">
+          <div className="flex rounded-xl bg-devDark-900 p-1 border border-devDark-700 w-full sm:w-auto">
             <button
               onClick={() => {
                 sound.playClick();
                 setActiveTab('bookmarks');
               }}
-              className={`min-h-[44px] px-4 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 ${
+              className={`flex-1 sm:flex-initial min-h-[44px] px-2.5 sm:px-4 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 sm:gap-2 ${
                 activeTab === 'bookmarks'
                   ? 'bg-devDark-800 text-devAmber border border-devDark-700'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <BookmarkFlagIcon size={15} className="text-devAmber" />
-              Tersimpan ({bookmarks.length})
+              <span>Tersimpan ({bookmarks.length})</span>
             </button>
             <button
               onClick={() => {
                 sound.playClick();
                 setActiveTab('history');
               }}
-              className={`min-h-[44px] px-4 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 ${
+              className={`flex-1 sm:flex-initial min-h-[44px] px-2.5 sm:px-4 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 sm:gap-2 ${
                 activeTab === 'history'
                   ? 'bg-devDark-800 text-devCyan border border-devDark-700'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <HistoryClockIcon size={15} className="text-devCyan" />
-              Riwayat spin ({historyItems.length})
+              <span>Riwayat ({historyItems.length})</span>
             </button>
           </div>
 

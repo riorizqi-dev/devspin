@@ -30,35 +30,35 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
   onPoolExhausted,
 }) => {
   return (
-    <div className="pt-6 pb-16 px-4 sm:px-6 max-w-7xl mx-auto">
+    <div className="pt-4 sm:pt-6 pb-12 sm:pb-16 px-3.5 sm:px-6 max-w-7xl mx-auto">
       {/* Terminal Hero Section */}
-      <section className="text-center max-w-3xl mx-auto pt-2 mb-8">
+      <section className="text-center max-w-3xl mx-auto pt-1 sm:pt-2 mb-6 sm:mb-8">
         {/* Terminal Prompt Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-devDark-900 border border-devDark-750 text-xs font-mono text-devCyan mb-5">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-devDark-900 border border-devDark-750 text-[11px] sm:text-xs font-mono text-devCyan mb-4 sm:mb-5">
           <span className="text-slate-500">&gt;</span>
           <span>devspin --system=online --ideas=155</span>
           <span className="w-1.5 h-3 bg-devCyan inline-block animate-cursor-blink" />
         </div>
 
         {/* H1 Heading (Solid Cyan Blue matching Logo) */}
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight mb-4">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight mb-3 sm:mb-4">
           Bingung mau ngoding apa?{' '}
-          <span className="text-devCyan font-mono">Spin aja.</span>
+          <span className="text-devCyan font-mono block sm:inline">Spin aja.</span>
         </h1>
 
-        <p className="text-sm sm:text-base text-slate-300 mb-8 leading-relaxed max-w-2xl mx-auto font-sans">
-          Generator ide project programmer dengan mekanisme case opening roulette berbasis kurva deselerasi fisika dan filter anti-repeat.
+        <p className="text-xs sm:text-base text-slate-300 mb-6 sm:mb-8 leading-relaxed max-w-2xl mx-auto font-sans px-2">
+          Generator ide project programmer dengan roulette reel kurva fisika deselerasi nyata dan filter anti-repeat.
         </p>
 
         {/* Mode Selector Cards */}
-        <div className="grid sm:grid-cols-2 gap-3 max-w-xl mx-auto text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto text-left">
           {/* Mode Guided */}
           <button
             onClick={() => {
               sound.playClick();
               onStartGuided();
             }}
-            className={`p-4 rounded-xl border transition-colors flex items-start justify-between min-h-[44px] ${
+            className={`p-3.5 sm:p-4 rounded-xl border transition-colors flex items-start justify-between min-h-[48px] ${
               mode === 'guided'
                 ? 'bg-devDark-850 border-devCyan text-white'
                 : 'bg-devDark-900 border-devDark-750 hover:border-devDark-650 text-slate-300'
@@ -93,7 +93,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
               sound.playClick();
               onStartRandom();
             }}
-            className={`p-4 rounded-xl border transition-colors flex items-start justify-between min-h-[44px] ${
+            className={`p-3.5 sm:p-4 rounded-xl border transition-colors flex items-start justify-between min-h-[48px] ${
               mode === 'random'
                 ? 'bg-devDark-850 border-devCyan text-white'
                 : 'bg-devDark-900 border-devDark-750 hover:border-devDark-650 text-slate-300'
@@ -149,9 +149,9 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
           <span>Spesifikasi sistem devspin</span>
         </h2>
 
-        <div className="grid sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* Card 1 */}
-          <div className="p-4 rounded-xl bg-devDark-900 border border-devDark-750 text-left">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-devDark-900 border border-devDark-750 text-left">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-devDark-800 text-devCyan border border-devDark-700">
                 <AntiRepeatIcon size={18} />
@@ -167,7 +167,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
           </div>
 
           {/* Card 2 */}
-          <div className="p-4 rounded-xl bg-devDark-900 border border-devDark-750 text-left">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-devDark-900 border border-devDark-750 text-left">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-devDark-800 text-devCyan border border-devDark-700">
                 <SpecCodeIcon size={18} />
@@ -183,7 +183,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
           </div>
 
           {/* Card 3 */}
-          <div className="p-4 rounded-xl bg-devDark-900 border border-devDark-750 text-left">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-devDark-900 border border-devDark-750 text-left">
             <div className="flex items-center justify-between mb-3">
               <div className="p-2 rounded-lg bg-devDark-800 text-devCyan border border-devDark-700">
                 <ExportCardIcon size={18} />

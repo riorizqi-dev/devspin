@@ -5,14 +5,16 @@ import {
   ArrowNavRightIcon,
   CheckmarkIcon,
   GuidedTunerIcon,
+  SpecCodeIcon,
 } from './Icons';
 import { sound } from '../utils/audio';
-import { type QuizFilter, filterProjects } from '../utils/storage';
+import { type QuizFilter, filterProjects, findBestMatch } from '../utils/storage';
+import { type ProjectIdea } from '../data/projectsData';
 
 interface QuizModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onComplete: (filter: QuizFilter) => void;
+  onComplete: (filter: QuizFilter, matchedProject?: ProjectIdea) => void;
 }
 
 interface QuestionOption<T> {
@@ -93,7 +95,8 @@ export const QuizModal: React.FC<QuizModalProps> = ({
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      onComplete(filter);
+      const bestMatch = findBestMatch(filter);
+      onComplete(filter, bestMatch);
     }
   };
 
@@ -106,7 +109,8 @@ export const QuizModal: React.FC<QuizModalProps> = ({
 
   const handleFinishEarly = () => {
     sound.playClick();
-    onComplete(filter);
+    const bestMatch = findBestMatch(filter);
+    onComplete(filter, bestMatch);
   };
 
   return (
@@ -383,14 +387,14 @@ export const QuizModal: React.FC<QuizModalProps> = ({
           )}
         </div>
 
-        {/* Footer Navigation */}
-        <div className="px-6 py-4 border-t border-devDark-750 bg-devDark-950/80 flex items-center justify-between gap-3">
-          <div>
+        {/* Footer Navigation (Mobile Responsive: Primary full-width on mobile, secondary below) */}
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-devDark-750 bg-devDark-950/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center justify-between sm:justify-start gap-2 order-2 sm:order-1">
             {step > 1 ? (
               <button
                 type="button"
                 onClick={handleBack}
-                className="min-h-[44px] px-4 py-2 rounded-xl bg-devDark-850 hover:bg-devDark-800 border border-devDark-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl bg-devDark-850 hover:bg-devDark-800 border border-devDark-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
               >
                 <ArrowNavLeftIcon size={14} />
                 Kembali
@@ -402,39 +406,40 @@ export const QuizModal: React.FC<QuizModalProps> = ({
                   sound.playClick();
                   onClose();
                 }}
-                className="min-h-[44px] px-4 py-2 rounded-xl text-slate-400 hover:text-white text-xs font-semibold transition-colors"
+                className="min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl text-slate-400 hover:text-white text-xs font-semibold transition-colors"
               >
                 Batal
               </button>
             )}
-          </div>
 
-          <div className="flex items-center gap-2">
             {step < totalSteps && (
               <button
                 type="button"
                 onClick={handleFinishEarly}
-                className="min-h-[44px] px-3.5 py-2 rounded-xl bg-devDark-800 hover:bg-devDark-750 text-slate-300 text-xs font-semibold transition-colors border border-devDark-700"
+                className="min-h-[44px] px-3 sm:px-3.5 py-2 rounded-xl bg-devDark-800 hover:bg-devDark-750 text-slate-300 text-xs font-semibold transition-colors border border-devDark-700"
               >
-                Langsung spin
+                Langsung dapatkan ide
               </button>
             )}
-
-            <button
-              type="button"
-              onClick={handleNext}
-              className="min-h-[44px] px-5 py-2 rounded-xl bg-devCyan hover:bg-devCyan-hover text-black font-bold text-xs flex items-center gap-2 transition-colors"
-            >
-              {step < totalSteps ? (
-                <>
-                  Lanjut
-                  <ArrowNavRightIcon size={14} />
-                </>
-              ) : (
-                'Kunci filter dan spin sekarang'
-              )}
-            </button>
           </div>
+
+          <button
+            type="button"
+            onClick={handleNext}
+            className="order-1 sm:order-2 w-full sm:w-auto min-h-[44px] px-5 sm:px-6 py-2.5 rounded-xl bg-devCyan hover:bg-devCyan-hover text-black font-bold text-xs flex items-center justify-center gap-2 transition-colors active:scale-95"
+          >
+            {step < totalSteps ? (
+              <>
+                Lanjut
+                <ArrowNavRightIcon size={14} />
+              </>
+            ) : (
+              <>
+                <SpecCodeIcon size={15} />
+                <span>Lihat Hasil Project yang Cocok</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

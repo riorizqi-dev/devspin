@@ -152,37 +152,102 @@ export const setAudioMutedPref = (muted: boolean): void => {
   }
 };
 
-// Pool filtering logic with Anti-Repeat
+// Calculate match score for a project against a QuizFilter
+export const calculateMatchScore = (project: ProjectIdea, filter: QuizFilter): number => {
+  let score = 0;
+
+  // Primary: Category match (+10)
+  if (filter.category) {
+    if (project.category === filter.category) {
+      score += 10;
+    } else {
+      return 0; // If user chose a specific category, only include that category
+    }
+  }
+
+  // Difficulty match (+5 for exact, +2 for adjacent)
+  if (filter.difficulty) {
+    if (project.difficulty === filter.difficulty) {
+      score += 5;
+    } else if (
+      (filter.difficulty === 'pemula' && project.difficulty === 'menengah') ||
+      (filter.difficulty === 'menengah' && (project.difficulty === 'pemula' || project.difficulty === 'mahir')) ||
+      (filter.difficulty === 'mahir' && project.difficulty === 'menengah')
+    ) {
+      score += 2;
+    }
+  }
+
+  // Goal match (+3)
+  if (filter.goal && project.goal.includes(filter.goal)) {
+    score += 3;
+  }
+
+  // Duration match (+3)
+  if (filter.duration && project.duration === filter.duration) {
+    score += 3;
+  }
+
+  // Domain match (+3)
+  if (filter.domain && project.domain === filter.domain) {
+    score += 3;
+  }
+
+  return score;
+};
+
+// Find the single best matched project for Guided Match
+export const findBestMatch = (filter: QuizFilter): ProjectIdea => {
+  const seenIds = new Set(getSeenIds());
+
+  // Pool from selected category (or all if none)
+  const pool = filter.category
+    ? PROJECT_IDEAS.filter(p => p.category === filter.category)
+    : PROJECT_IDEAS;
+
+  const scored = pool.map(p => ({
+    project: p,
+    score: calculateMatchScore(p, filter),
+    seen: seenIds.has(p.id)
+  }));
+
+  // Sort: highest score first, unseen first
+  scored.sort((a, b) => {
+    if (a.seen !== b.seen) return a.seen ? 1 : -1;
+    return b.score - a.score;
+  });
+
+  return scored[0]?.project || pool[0] || PROJECT_IDEAS[0];
+};
+
+// Pool filtering logic with Anti-Repeat and healthy pool size
 export const filterProjects = (
   filter: QuizFilter | null,
   excludeSeen: boolean = true
 ): { available: ProjectIdea[]; totalMatching: number; seenCount: number } => {
   const seenIds = new Set(getSeenIds());
 
-  let matching = PROJECT_IDEAS;
-
-  if (filter) {
-    if (filter.category) {
-      matching = matching.filter(p => p.category === filter.category);
-    }
-    if (filter.difficulty) {
-      matching = matching.filter(p => p.difficulty === filter.difficulty);
-    }
-    if (filter.goal) {
-      matching = matching.filter(p => p.goal.includes(filter.goal!));
-    }
-    if (filter.duration) {
-      matching = matching.filter(p => p.duration === filter.duration);
-    }
-    if (filter.domain) {
-      matching = matching.filter(p => p.domain === filter.domain);
-    }
+  if (!filter) {
+    const totalMatching = PROJECT_IDEAS.length;
+    const available = excludeSeen
+      ? PROJECT_IDEAS.filter(p => !seenIds.has(p.id))
+      : PROJECT_IDEAS;
+    const seenCount = totalMatching - available.length;
+    return { available, totalMatching, seenCount };
   }
 
-  const totalMatching = matching.length;
+  // Scoped to category if selected (25-30 ideas per category, never starved to 4!)
+  let pool = filter.category
+    ? PROJECT_IDEAS.filter(p => p.category === filter.category)
+    : PROJECT_IDEAS;
+
+  // Rank by match score descending so the closest matches appear first
+  pool = [...pool].sort((a, b) => calculateMatchScore(b, filter) - calculateMatchScore(a, filter));
+
+  const totalMatching = pool.length;
   const available = excludeSeen
-    ? matching.filter(p => !seenIds.has(p.id))
-    : matching;
+    ? pool.filter(p => !seenIds.has(p.id))
+    : pool;
   const seenCount = totalMatching - available.length;
 
   return {

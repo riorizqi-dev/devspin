@@ -6,8 +6,10 @@ import { ResultModal } from './components/ResultModal';
 import { HistoryModal } from './components/HistoryModal';
 import { ExhaustedPoolModal } from './components/ExhaustedPoolModal';
 import { PROJECT_IDEAS, type ProjectIdea } from './data/projectsData';
-import { type QuizFilter, filterProjects, resetSeenIds } from './utils/storage';
+import { type QuizFilter, filterProjects, resetSeenIds, markIdAsSeen, addSpinHistory } from './utils/storage';
 import { SpecCodeIcon } from './components/Icons';
+import { sound } from './utils/audio';
+import confetti from 'canvas-confetti';
 
 export const App: React.FC = () => {
   const [spinMode, setSpinMode] = useState<'guided' | 'random'>('random');
@@ -33,10 +35,25 @@ export const App: React.FC = () => {
     setRefreshKey((k) => k + 1);
   };
 
-  const handleQuizComplete = (filter: QuizFilter) => {
+  const handleQuizComplete = (filter: QuizFilter, matchedProject?: ProjectIdea) => {
     setActiveFilter(filter);
     setSpinMode('guided');
     setIsQuizOpen(false);
+
+    if (matchedProject) {
+      // Directly reveal the matched project from Guided Match!
+      markIdAsSeen(matchedProject.id);
+      addSpinHistory(matchedProject, 'guided');
+      setResultProject(matchedProject);
+      sound.playWin();
+      confetti({
+        particleCount: 80,
+        spread: 75,
+        origin: { y: 0.6 },
+        colors: ['#00e5ff', '#38bdf8', '#f59e0b', '#ffffff']
+      });
+    }
+
     setRefreshKey((k) => k + 1);
   };
 

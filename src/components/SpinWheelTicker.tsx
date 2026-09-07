@@ -233,10 +233,10 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
   return (
     <div className="w-full max-w-6xl mx-auto">
       {/* Top Controller Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-devDark-900 border border-devDark-750 mb-4 font-mono">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-devDark-900 border border-devDark-750 mb-4 font-mono">
         <div className="flex items-center gap-3">
           <div
-            className={`w-9 h-9 rounded-xl flex items-center justify-center border ${
+            className={`w-9 h-9 rounded-xl flex items-center justify-center border flex-shrink-0 ${
               mode === 'guided'
                 ? 'bg-devDark-800 text-termGreen border-devDark-700'
                 : 'bg-devDark-800 text-slate-300 border-devDark-700'
@@ -245,33 +245,33 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
             {mode === 'guided' ? <GuidedTunerIcon size={18} /> : <RandomDiceIcon size={18} />}
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-bold text-white uppercase tracking-wider">
                 {mode === 'guided' ? 'MODE_GUIDED' : 'MODE_RANDOM'}
               </span>
-              <span className="text-[11px] px-2 py-0.5 rounded bg-devDark-800 text-termGreen border border-devDark-700">
+              <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded bg-devDark-800 text-termGreen border border-devDark-700">
                 {available.length} ide aktif
               </span>
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-[11px] sm:text-xs text-slate-400">
               {mode === 'guided'
-                ? '> filter kuis diterapkan ke reel roulette'
-                : '> seluruh 155 database ide dimuat ke reel'}
+                ? '> filter kuis diterapkan ke pool'
+                : '> seluruh 155 database ide dimuat'}
             </p>
           </div>
         </div>
 
         {/* Filter Badges or Switcher */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-devDark-800">
           {mode === 'guided' ? (
             <>
               {filter?.category && (
-                <span className="text-xs px-2.5 py-1 rounded bg-devDark-800 text-termGreen border border-devDark-700">
+                <span className="text-[11px] sm:text-xs px-2 sm:px-2.5 py-1 rounded bg-devDark-800 text-termGreen border border-devDark-700">
                   cat:{filter.category}
                 </span>
               )}
               {filter?.difficulty && (
-                <span className="text-xs px-2.5 py-1 rounded bg-devDark-800 text-slate-300 border border-devDark-700">
+                <span className="text-[11px] sm:text-xs px-2 sm:px-2.5 py-1 rounded bg-devDark-800 text-slate-300 border border-devDark-700">
                   diff:{filter.difficulty}
                 </span>
               )}
@@ -285,7 +285,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
                 className="min-h-[44px] px-3 py-1.5 rounded-lg bg-devDark-850 hover:bg-devDark-800 text-slate-300 hover:text-white border border-devDark-750 text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
               >
                 <GuidedTunerIcon size={14} />
-                [ubah filter]
+                <span>[kuis ulang]</span>
               </button>
               <button
                 type="button"
@@ -297,7 +297,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
                 className="min-h-[44px] px-3 py-1.5 rounded-lg bg-devDark-850 hover:bg-devDark-800 text-termGreen border border-devDark-750 text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
               >
                 <RandomDiceIcon size={14} />
-                [mode acak]
+                <span>[mode acak]</span>
               </button>
             </>
           ) : (
@@ -308,119 +308,123 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
                 onOpenQuiz();
               }}
               disabled={reelState === 'spinning'}
-              className="min-h-[44px] px-3.5 py-1.5 rounded-lg bg-devDark-850 hover:bg-devDark-800 text-termGreen border border-devDark-750 text-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
+              className="w-full sm:w-auto min-h-[44px] px-3.5 py-1.5 rounded-lg bg-devDark-850 hover:bg-devDark-800 text-termGreen border border-devDark-750 text-xs flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
             >
               <GuidedTunerIcon size={14} />
-              [filter kuis guided]
+              <span>[buka kuis guided match]</span>
             </button>
           )}
         </div>
       </div>
 
       {/* Main Strip Ticker Display (Case Opening Roulette) */}
-      <div className="relative rounded-3xl bg-devDark-900 border border-devDark-750 p-5 sm:p-7 overflow-hidden">
+      <div className="relative rounded-2xl sm:rounded-3xl bg-devDark-900 border border-devDark-750 p-3 sm:p-6 overflow-hidden">
         {/* Terminal Strip Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-devDark-800 text-[11px] font-mono text-slate-400 mb-2">
-          <span className="flex items-center gap-2 text-termGreen">
-            <span className={`w-2 h-2 rounded-full ${reelState === 'spinning' ? 'bg-devRose animate-ping' : 'bg-termGreen animate-pulse'}`} />
-            {reelState === 'idle' && 'GACHA_REEL_ACTIVE (CONVEYOR_DRIFT)'}
-            {reelState === 'spinning' && 'DECELERATING_SPIN_ROULETTE...'}
-            {reelState === 'revealed' && 'TARGET_LOCKED_ON_NEEDLE'}
+        <div className="flex items-center justify-between pb-3 border-b border-devDark-800 text-[10px] sm:text-[11px] font-mono text-slate-400 mb-1">
+          <span className="flex items-center gap-2 text-termGreen truncate">
+            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${reelState === 'spinning' ? 'bg-devRose animate-ping' : 'bg-termGreen animate-pulse'}`} />
+            <span className="truncate">
+              {reelState === 'idle' && 'GACHA_REEL_ACTIVE (CONVEYOR_DRIFT)'}
+              {reelState === 'spinning' && 'DECELERATING_SPIN_ROULETTE...'}
+              {reelState === 'revealed' && 'TARGET_LOCKED_ON_NEEDLE'}
+            </span>
           </span>
-          <span className="text-slate-500 hidden sm:inline">
+          <span className="text-slate-500 hidden sm:inline flex-shrink-0">
             [Spacebar atau klik untuk putar]
           </span>
         </div>
 
-        {/* Center Needle Marker (Sharp red indicator, perfectly centered) */}
-        <div className="absolute top-[52px] bottom-[90px] left-1/2 -translate-x-1/2 w-0.5 bg-devRose z-30 pointer-events-none">
-          <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[9px] border-t-devRose" />
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[9px] border-b-devRose" />
-        </div>
+        {/* Ticker Viewport Container with localized Needle Marker */}
+        <div className="relative w-full overflow-hidden py-3 select-none">
+          {/* Center Needle Marker (Scoped precisely to card height, never protruding) */}
+          <div className="absolute top-1 bottom-1 left-1/2 -translate-x-1/2 w-0.5 bg-devRose z-30 pointer-events-none">
+            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[8px] border-t-devRose" />
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[8px] border-b-devRose" />
+          </div>
 
-        {/* Ticker Viewport with horizontal edge fades */}
-        <div
-          ref={containerRef}
-          onClick={() => {
-            if (reelState === 'idle') handleStartSpin();
-          }}
-          className={`relative w-full overflow-hidden ticker-mask py-4 select-none min-h-[235px] flex items-center ${
-            reelState === 'idle' ? 'cursor-pointer' : ''
-          }`}
-          title={reelState === 'idle' ? 'Klik untuk putar gacha reel' : ''}
-        >
-          {/* Reel Track: Position controlled by smooth RAF physics engine */}
           <div
-            ref={trackRef}
-            className="flex items-center"
-            style={{
-              gap: `${CARD_GAP}px`,
-              willChange: 'transform',
+            ref={containerRef}
+            onClick={() => {
+              if (reelState === 'idle') handleStartSpin();
             }}
+            className={`w-full overflow-hidden ticker-mask flex items-center min-h-[215px] ${
+              reelState === 'idle' ? 'cursor-pointer' : ''
+            }`}
+            title={reelState === 'idle' ? 'Klik untuk putar gacha reel' : ''}
           >
-            {reelCards.map((card, idx) => {
-              const cat = CATEGORY_LABELS[card.category] || { label: card.category, color: '#00e5ff' };
-              const diff = DIFFICULTY_CONFIG[card.difficulty] || { label: card.difficulty, badgeClass: '' };
-              const isWinningCard = reelState === 'revealed' && idx === WINNER_INDEX && winnerCard?.id === card.id;
+            {/* Reel Track: Position controlled by smooth RAF physics engine */}
+            <div
+              ref={trackRef}
+              className="flex items-center"
+              style={{
+                gap: `${CARD_GAP}px`,
+                willChange: 'transform',
+              }}
+            >
+              {reelCards.map((card, idx) => {
+                const cat = CATEGORY_LABELS[card.category] || { label: card.category, color: '#00e5ff' };
+                const diff = DIFFICULTY_CONFIG[card.difficulty] || { label: card.difficulty, badgeClass: '' };
+                const isWinningCard = reelState === 'revealed' && idx === WINNER_INDEX && winnerCard?.id === card.id;
 
-              return (
-                <div
-                  key={`${card.id}-${idx}`}
-                  style={{ width: `${CARD_WIDTH}px` }}
-                  className={`flex-shrink-0 h-[205px] p-4 rounded-2xl border transition-all text-left flex flex-col justify-between ${
-                    isWinningCard
-                      ? 'bg-devDark-800 border-devCyan ring-2 ring-devCyan/50 scale-[1.03] z-20 shadow-[0_0_25px_rgba(0,229,255,0.35)]'
-                      : 'bg-devDark-850 border-devDark-750 hover:border-devDark-700'
-                  }`}
-                >
-                  {/* Top info */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-mono font-medium text-termGreen px-2 py-0.5 rounded bg-devDark-800 border border-devDark-700">
-                        {cat.label}
-                      </span>
-                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${diff.badgeClass}`}>
-                        {diff.label}
-                      </span>
-                    </div>
-
-                    <h3 className="font-bold text-sm text-slate-100 line-clamp-2 leading-snug mb-1 font-mono">
-                      {card.title}
-                    </h3>
-
-                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed font-sans">
-                      {card.description}
-                    </p>
-                  </div>
-
-                  {/* Bottom tech tags */}
-                  <div>
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {card.stack.slice(0, 2).map((s, i) => (
-                        <span
-                          key={i}
-                          className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-devDark-800 text-slate-300 border border-devDark-750"
-                        >
-                          {s}
+                return (
+                  <div
+                    key={`${card.id}-${idx}`}
+                    style={{ width: `${CARD_WIDTH}px` }}
+                    className={`flex-shrink-0 h-[200px] p-3.5 sm:p-4 rounded-2xl border transition-all text-left flex flex-col justify-between ${
+                      isWinningCard
+                        ? 'bg-devDark-800 border-devCyan ring-2 ring-devCyan/50 scale-[1.02] z-20 shadow-[0_0_25px_rgba(0,229,255,0.35)]'
+                        : 'bg-devDark-850 border-devDark-750 hover:border-devDark-700'
+                    }`}
+                  >
+                    {/* Top info */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-mono font-medium text-termGreen px-2 py-0.5 rounded bg-devDark-800 border border-devDark-700">
+                          {cat.label}
                         </span>
-                      ))}
+                        <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${diff.badgeClass}`}>
+                          {diff.label}
+                        </span>
+                      </div>
+
+                      <h3 className="font-bold text-sm text-slate-100 line-clamp-2 leading-snug mb-1 font-mono">
+                        {card.title}
+                      </h3>
+
+                      <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed font-sans">
+                        {card.description}
+                      </p>
                     </div>
-                    <div className="text-[10px] font-mono text-slate-400 flex items-center justify-between pt-1.5 border-t border-devDark-750">
-                      <span className="flex items-center gap-1">
-                        <ClockMeterIcon size={12} className="text-slate-400" />
-                        {card.duration}
-                      </span>
-                      <span className="capitalize text-slate-400">{card.domain}</span>
+
+                    {/* Bottom tech tags */}
+                    <div>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {card.stack.slice(0, 2).map((s, i) => (
+                          <span
+                            key={i}
+                            className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-devDark-800 text-slate-300 border border-devDark-750"
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="text-[10px] font-mono text-slate-400 flex items-center justify-between pt-1.5 border-t border-devDark-750">
+                        <span className="flex items-center gap-1">
+                          <ClockMeterIcon size={12} className="text-slate-400" />
+                          {card.duration}
+                        </span>
+                        <span className="capitalize text-slate-400">{card.domain}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        {/* Spin Trigger Section: BRIGHT ELECTRIC CYAN BLUE BUTTON (MATCHING LOGO) */}
-        <div className="mt-6 pt-4 border-t border-devDark-800 flex flex-col sm:flex-row items-center justify-center gap-4">
+        {/* Spin Trigger Section: BRIGHT ELECTRIC CYAN BLUE BUTTON */}
+        <div className="mt-4 sm:mt-5 pt-3.5 sm:pt-4 border-t border-devDark-800 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <button
             type="button"
             onClick={handleStartSpin}
@@ -430,7 +434,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
               backgroundColor: reelState === 'spinning' ? '#101c2c' : '#00e5ff',
               color: reelState === 'spinning' ? '#00e5ff' : '#06090e',
             }}
-            className="w-full sm:w-auto px-10 py-4 rounded-xl font-mono font-extrabold text-sm tracking-wider flex items-center justify-center gap-3 transition-all cursor-pointer border border-[#00e5ff]/40 shadow-lg hover:brightness-110 active:scale-95 disabled:cursor-not-allowed min-h-[50px]"
+            className="w-full sm:w-auto px-6 sm:px-10 py-3.5 sm:py-4 rounded-xl font-mono font-extrabold text-xs sm:text-sm tracking-wider flex items-center justify-center gap-2.5 sm:gap-3 transition-all cursor-pointer border border-[#00e5ff]/40 shadow-lg hover:brightness-110 active:scale-95 disabled:cursor-not-allowed min-h-[48px]"
           >
             {reelState === 'spinning' ? (
               <>
@@ -447,16 +451,16 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
 
           {available.length === 0 && (
             <div className="text-center sm:text-left text-xs text-devRose font-mono">
-              Pool ide di kategori ini sudah habis. Klik "Ubah filter" atau reset riwayat.
+              Pool ide di kategori ini sudah habis. Klik "Kuis ulang" atau reset riwayat.
             </div>
           )}
         </div>
       </div>
 
       {/* Pool Stats Indicator */}
-      <div className="mt-4 flex flex-wrap items-center justify-between text-xs text-slate-400 font-mono px-2">
+      <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 sm:gap-4 text-[11px] sm:text-xs text-slate-400 font-mono px-2">
         <div className="flex items-center gap-2">
-          <CheckmarkIcon size={14} className="text-termGreen" />
+          <CheckmarkIcon size={14} className="text-termGreen flex-shrink-0" />
           <span>Anti-repeat: {seenCount} ide telah tercatat di histori lokal.</span>
         </div>
         <div>
