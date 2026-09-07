@@ -15,6 +15,8 @@ import { sound } from '../utils/audio';
 interface SpinWheelTickerProps {
   mode: 'guided' | 'random';
   filter: QuizFilter | null;
+  refreshKey?: number;
+  autoSpinNonce?: number;
   onWinnerSelected: (project: ProjectIdea) => void;
   onOpenQuiz: () => void;
   onSwitchToRandom: () => void;
@@ -30,6 +32,8 @@ const WINNER_INDEX = 50; // Center target card index
 export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
   mode,
   filter,
+  refreshKey = 0,
+  autoSpinNonce = 0,
   onWinnerSelected,
   onOpenQuiz,
   onSwitchToRandom,
@@ -38,6 +42,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
   const [reelState, setReelState] = useState<'idle' | 'spinning' | 'revealed'>('idle');
   const [reelCards, setReelCards] = useState<ProjectIdea[]>([]);
   const [winnerCard, setWinnerCard] = useState<ProjectIdea | null>(null);
+  const [localPoolVersion, setLocalPoolVersion] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -63,7 +68,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
     return cards;
   }, []);
 
-  // Initialize or reset reel on pool change
+  // Initialize or reset reel on pool change, refreshKey change, or mode change
   useEffect(() => {
     if (available.length === 0) return;
     const cards = buildReelSequence(available);
@@ -71,12 +76,12 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
     setReelState('idle');
     setWinnerCard(null);
 
-    // Reset track position
+    // Reset track position to 0
     currentXRef.current = 0;
     if (trackRef.current) {
       trackRef.current.style.transform = 'translate3d(0px, 0, 0)';
     }
-  }, [available.length, mode, filter, buildReelSequence]);
+  }, [mode, filter, refreshKey, localPoolVersion, buildReelSequence]);
 
   // Ambient idle drift loop using RAF
   useEffect(() => {
@@ -154,14 +159,20 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
 
     sound.playWhoosh();
 
-    const startX = currentXRef.current;
+    // 4. ALWAYS RESET TRACK TO 0 SO EVERY SPIN TRAVELS A FULL FRESH STRIP
+    currentXRef.current = 0;
+    track.style.transform = 'translate3d(0px, 0, 0)';
+
+    const startX = 0;
     const containerWidth = container.clientWidth;
     const centerPoint = containerWidth / 2;
-    const winnerCenter = WINNER_INDEX * CARD_STEP + CARD_WIDTH / 2;
+    // Small natural jitter within card width (-30px to +30px)
+    const jitter = (Math.random() - 0.5) * 60;
+    const winnerCenter = WINNER_INDEX * CARD_STEP + CARD_WIDTH / 2 + jitter;
     const targetOffset = centerPoint - winnerCenter;
     const totalDistance = targetOffset - startX;
 
-    // 4. Launch immediate RAF physics deceleration
+    // 5. Launch immediate RAF physics deceleration
     const startTime = performance.now();
     const durationMs = 4200;
     const tickSet = new Set<number>();
@@ -199,6 +210,7 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
 
         markIdAsSeen(selectedWinner.id);
         addSpinHistory(selectedWinner, mode);
+        setLocalPoolVersion(v => v + 1);
 
         sound.playWin();
         confetti({
@@ -217,6 +229,16 @@ export const SpinWheelTicker: React.FC<SpinWheelTickerProps> = ({
 
     animFrameRef.current = requestAnimationFrame(spinStep);
   }, [available, buildReelSequence, mode, onPoolExhausted, onWinnerSelected, reelState]);
+
+  // Auto-spin trigger when requested from ResultModal ("Spin lagi ide lain")
+  useEffect(() => {
+    if (autoSpinNonce && autoSpinNonce > 0) {
+      const timer = setTimeout(() => {
+        handleStartSpin();
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [autoSpinNonce, handleStartSpin]);
 
   // Keyboard shortcut: Spacebar to trigger spin
   useEffect(() => {

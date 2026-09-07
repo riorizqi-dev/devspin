@@ -20,7 +20,8 @@ export const App: React.FC = () => {
   const [historyTab, setHistoryTab] = useState<'bookmarks' | 'history'>('bookmarks');
   const [resultProject, setResultProject] = useState<ProjectIdea | null>(null);
   const [isExhaustedModalOpen, setIsExhaustedModalOpen] = useState(false);
-  const [, setRefreshKey] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [autoSpinNonce, setAutoSpinNonce] = useState(0);
 
   // Compute live pool stats
   const { available } = filterProjects(activeFilter, true);
@@ -69,6 +70,7 @@ export const App: React.FC = () => {
   const handleSpinAgain = () => {
     setResultProject(null);
     setRefreshKey((k) => k + 1);
+    setAutoSpinNonce((n) => n + 1);
   };
 
   const handlePoolReset = () => {
@@ -100,6 +102,8 @@ export const App: React.FC = () => {
         <LandingHero
           mode={spinMode}
           filter={activeFilter}
+          refreshKey={refreshKey}
+          autoSpinNonce={autoSpinNonce}
           onStartGuided={handleStartGuided}
           onStartRandom={handleStartRandom}
           onWinnerSelected={handleWinnerSelected}

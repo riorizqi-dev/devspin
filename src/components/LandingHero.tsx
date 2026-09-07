@@ -15,6 +15,8 @@ import type { QuizFilter } from '../utils/storage';
 interface LandingHeroProps {
   mode: 'guided' | 'random';
   filter: QuizFilter | null;
+  refreshKey?: number;
+  autoSpinNonce?: number;
   onStartGuided: () => void;
   onStartRandom: () => void;
   onWinnerSelected: (project: ProjectIdea) => void;
@@ -24,6 +26,8 @@ interface LandingHeroProps {
 export const LandingHero: React.FC<LandingHeroProps> = ({
   mode,
   filter,
+  refreshKey = 0,
+  autoSpinNonce = 0,
   onStartGuided,
   onStartRandom,
   onWinnerSelected,
@@ -135,6 +139,8 @@ export const LandingHero: React.FC<LandingHeroProps> = ({
         <SpinWheelTicker
           mode={mode}
           filter={filter}
+          refreshKey={refreshKey}
+          autoSpinNonce={autoSpinNonce}
           onWinnerSelected={onWinnerSelected}
           onOpenQuiz={onStartGuided}
           onSwitchToRandom={onStartRandom}
